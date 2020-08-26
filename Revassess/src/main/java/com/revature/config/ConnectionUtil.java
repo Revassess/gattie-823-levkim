@@ -1,8 +1,13 @@
 package com.revature.config;
 
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.sql.Types;
+
+import org.hibernate.dialect.PostgreSQLDialect;
+import org.postgresql.Driver;
 
 /**
  * 
@@ -31,13 +36,9 @@ public class ConnectionUtil {
 	// implement this method to connect to the db and return the connection object
 	public Connection connect(){
 		try {
-			Class.forName("org.postgres.Driver");
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		}
-		
-		try {
-			return DriverManager.getConnection(URL, USERNAME, PASSWORD);
+			DriverManager.registerDriver(new org.postgresql.Driver());
+			Connection conn = DriverManager.getConnection(URL, USERNAME, PASSWORD);
+			return conn;
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -49,7 +50,20 @@ public class ConnectionUtil {
 
 	//implement this method with a callable statement that calls the absolute value sql function
 	public long callAbsoluteValueFunction(long value){
-		return value;
+		try {
+			long result = 0;
+			CallableStatement stmt = connect().prepareCall("{? = call ABS(?)}");
+			
+			stmt.registerOutParameter(1, Types.BIGINT);
+			stmt.setLong(2, value);
+			stmt.execute();
+			result = stmt.getLong(1);
+			
+			return result;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return 0;
 	}
 	
 
