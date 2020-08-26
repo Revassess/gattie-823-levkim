@@ -1,4 +1,5 @@
-select au.username, question, answer, category_id from flashcard f 
-inner join study_set_card ssc on ssc.flashcard_id = f.flashcard_id 
-inner join study_set ss on ss.study_set_id = ssc.study_set_id 
-inner join app_user au on owner_id = user_id where user_id = 5;
+select au.username as "au.username", f.question as "f.question", f.answer as "f.answer", f.category_id as "f.category_id" 
+from flashcard f, study_set_card ssc, study_set ss, app_user au  
+where f.flashcard_id = ssc.flashcard_id 
+and ssc.study_set_id = ss.study_set_id 
+and ss.owner_id = au.user_id and au.user_id = 5;
